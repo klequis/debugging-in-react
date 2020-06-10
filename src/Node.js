@@ -1,29 +1,10 @@
-import React, { useState } from 'react'
-import {createUseStyles} from 'react-jss'
-
-const Node = () => {
-  const [state, setState] = ({
-    key: null,
-    left: null,
-    right: null,
-    row: null,
-    col: null
-  })
-
-
-  const useStyles = createUseStyles({
-    node: {
-      borderRadius: '50%'
-    }
-  })
-  const classes = useStyles()
-  // const classes = 
-  return (
-    <div className={classes.node}>
-      {key}
-    </div>
-  )
-
+export class Node {
+  constructor(key) {
+    this.key = key; // {1} node value
+    this.left = null; // left child node reference
+    this.right = null; // right child node reference
+    this.row = null
+    this.col = null
+  }
 }
 
-export default Node

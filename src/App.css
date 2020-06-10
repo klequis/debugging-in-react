@@ -28,11 +28,16 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+table {
+  /* background-color: #61dafb; */
+}
+
+td {
+  /* color: blueviolet */
+}
+
+th, th, td {
+  /* background: linear-gradient(to bottom, rgba(0,0,0,0.1), rgba(0,0,0,0.5)); */
+  border: 1px solid white;
+  border-collapse: collapse;
 }

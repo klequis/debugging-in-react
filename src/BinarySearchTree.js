@@ -1,105 +1,198 @@
 import { Compare, defaultCompare } from './util'
-import Node from './Node'
+import { Node } from './Node'
 
 const log = console.log
 
-class BinarySearchTree {
+export default class BinarySearchTree {
   constructor(compareFn = defaultCompare) {
-    this.compareFn = compareFn
-    this.root = undefined
+    this.compareFn = compareFn;
+    this.root = undefined;
+    this.nodeGraph = []
   }
   insert(key) {
     // special case: first key
     if (this.root == null) {
-      this.root = new Node(key)
+      this.root = new Node(key);
     } else {
-      this.insertNode(this.root, key)
+      this.insertNode(this.root, key);
     }
   }
   insertNode(node, key) {
     if (this.compareFn(key, node.key) === Compare.LESS_THAN) {
-      // node.row = 'hi'
       if (node.left == null) {
-        node.left = new Node(key)
+        node.left = new Node(key);
       } else {
-        this.insertNode(node.left, key)
+        this.insertNode(node.left, key);
       }
     } else if (node.right == null) {
-      node.right = new Node(key)
+      node.right = new Node(key);
     } else {
-      this.insertNode(node.right, key)
+      this.insertNode(node.right, key);
     }
   }
   getRoot() {
-    return this.root
+    return this.root;
   }
-  min() {
-    return this.minNode(this.root)
+  search(key) {
+    return this.searchNode(this.root, key);
   }
-  minNode(node) {
-    let current = node
-    while (current != null && current.left != null) {
-      current = current.left
+  searchNode(node, key) {
+    if (node == null) {
+      return false;
     }
-    return current
-  }
-  max() {
-    return this.maxNode(this.root)
-  }
-  maxNode(node) {
-    let current = node
-    while (current != null && current.right != null) {
-      current = current.right
+    if (this.compareFn(key, node.key) === Compare.LESS_THAN) {
+      return this.searchNode(node.left, key);
+    } else if (this.compareFn(key, node.key) === Compare.BIGGER_THAN) {
+      return this.searchNode(node.right, key);
     }
-    return current
+    return true;
+  }
+  getNode(key) {
+    return this.getNodeNode(this.root, key)
+  }
+  getNodeNode(node, key) {
+    if (node == null) {
+      return false;
+    }
+    if (node.key === key) {
+      return node
+    } else if (this.compareFn(key, node.key) === Compare.LESS_THAN) {
+      return this.getNodeNode(node.left, key);
+    } else if (this.compareFn(key, node.key) === Compare.BIGGER_THAN) {
+      return this.getNodeNode(node.right, key);
+    }
   }
   inOrderTraverse(callback) {
-    this.inOrderTraverseNode(this.root, callback)
+    this.nodeGraph = []
+    this.inOrderTraverseNode(this.root, callback);
   }
-  inOrderTraverseNode(node, callback, row = 0, col = 0) {
-    
+  inOrderTraverseNode(node, callback) {
     if (node != null) {
-      ++row
-      log('1')
-      --col
-      this.inOrderTraverseNode(node.left, callback, row, col);
-      log('2')
       
-      console.log(node.key)
-      log('3')
-      debugger
-      ++col
-      this.inOrderTraverseNode(node.right, callback, row, col);
-      log('4')
+      // print it
+      if (node.left !== null) {
+        log('node', node)
+        log('node.key', node.key)
+        log('node.left.key', node.left.key)
+        log(`${node.key} -> ${node.left.key}`)
+        this.nodeGraph.push(`${node.key} -> ${node.left.key}`)
+      }
+      if (node.right !== null) {
+        log('node.key', node.key)
+        log('node.left.key', node.right.key)
+        log(`${node.key} -> ${node.right.key}`)
+        this.nodeGraph.push(`${node.key} -> ${node.right.key}`)
+      }
+      // print it
+      
+      this.inOrderTraverseNode(node.left, callback);
+      callback(node.key);
+      this.inOrderTraverseNode(node.right, callback);
     }
   }
+  nodeGraphString() {
+    return `digraph {
+      ${this.nodeGraph.join('; ')}
+    }` 
+  }
+  // printTree() {
+  //   this.printTreeString(this.root)
+  // }
+  // printTreeString() {
+  //   if (node != null) {
+  //     debugger
+  //     // print it
+  //     if (node.left !== null) {
+
+  //       log(`${node.key} -> ${node.left.key}`)
+  //     }
+  //     if (node.right !== null) {
+  //       log(`${node.key} -> ${node.right.key}`)
+  //     }
+  //     // print it
+      
+  //     this.inOrderTraverseNode(node.left, callback);
+  //     callback(node.key);
+  //     this.inOrderTraverseNode(node.right, callback);
+  //   }
+  // }
+  preOrderTraverse(callback) {
+    this.preOrderTraverseNode(this.root, callback);
+  }
+  preOrderTraverseNode(node, callback) {
+    if (node != null) {
+      callback(node.key);
+      this.preOrderTraverseNode(node.left, callback);
+      this.preOrderTraverseNode(node.right, callback);
+    }
+  }
+  postOrderTraverse(callback) {
+    this.postOrderTraverseNode(this.root, callback);
+  }
+  postOrderTraverseNode(node, callback) {
+    if (node != null) {
+      this.postOrderTraverseNode(node.left, callback);
+      this.postOrderTraverseNode(node.right, callback);
+      callback(node.key);
+    }
+  }
+  min() {
+    return this.minNode(this.root);
+  }
+  minNode(node) {
+    let current = node;
+    while (current != null && current.left != null) {
+      current = current.left;
+    }
+    return current;
+  }
+  max() {
+    return this.maxNode(this.root);
+  }
+  maxNode(node) {
+    let current = node;
+    while (current != null && current.right != null) {
+      current = current.right;
+    }
+    return current;
+  }
   remove(key) {
-    this.removeNode(this.root, key)
+    // debugger
+    this.root = this.removeNode(this.root, key);
   }
-  // Remove node 5
-  removeNode = (node, key = 5, prevNode = null) => {
-
-
-    // log()
-    // printNode('node', node)
-    // printNode('prevNode', prevNode)
-
-    if (key < node.key) {
-      log('key is less than')
-      prevNode = node
-      node = node.left
-      this.removeNode(node, key, prevNode)
-    } else if (node.key === key) {
-      log('key is equal to')
-      prevNode.left = node.left
-      prevNode.right = node.right
-      node.left = null
-      node.right = null
-    } 
-  }
-  printTree() {
-
+  removeNode(node, key) {
+    if (node == null) {
+      return undefined;
+    }
+    if (this.compareFn(key, node.key) === Compare.LESS_THAN) {
+      node.left = this.removeNode(node.left, key);
+      return node;
+    } else if (this.compareFn(key, node.key) === Compare.BIGGER_THAN) {
+      node.right = this.removeNode(node.right, key);
+      return node;
+    }
+    // key is equal to node.item
+    // handle 3 special conditions
+    // 1 - a leaf node
+    // 2 - a node with only 1 child
+    // 3 - a node with 2 children
+    // case 1
+    if (node.left == null && node.right == null) {
+      node = undefined;
+      return node;
+    }
+    // case 2
+    if (node.left == null) {
+      node = node.right;
+      return node;
+    } else if (node.right == null) {
+      node = node.left;
+      return node;
+    }
+    // case 3
+    const aux = this.minNode(node.right);
+    node.key = aux.key;
+    node.right = this.removeNode(node.right, aux.key);
+    return node;
   }
 }
-
-export default BinarySearchTree
