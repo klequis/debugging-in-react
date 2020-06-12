@@ -2,7 +2,8 @@ import React from "react";
 import logo from "./logo.svg";
 import "./App.css";
 import BinarySearchTree from "./BinarySearchTree";
-import { Graphviz } from "graphviz-react";
+import BinarySearchTree from "./GeeksBST";
+// import { Graphviz } from "graphviz-react";
 
 const log = console.log;
 
